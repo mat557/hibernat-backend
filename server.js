@@ -9,7 +9,8 @@ const authHandler = require('./routes/authRoutes')
 
 
 app.use(cookieParser())
-app.use(cors(corsOption))
+app.use(cors())
+// app.use(cors(corsOption))
 app.use(express.json())
 
 
