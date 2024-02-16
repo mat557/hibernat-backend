@@ -152,6 +152,7 @@ const loginUser = async(req,res) =>{
         const collection = database.collection('users')
 
         const { email , password } = req.body
+        console.log(req.headers)
 
         if(!email || !password){
             return res
@@ -161,7 +162,7 @@ const loginUser = async(req,res) =>{
 
         if(!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
             return res
-            .status(404)
+            .status(400)
             .json({ "message": "Invalid email format!" })
         }
         const query = { email : email }
@@ -205,14 +206,13 @@ const loginUser = async(req,res) =>{
         res.cookie('jwt', refresh_token, {
             expiresIn:1000*60*60*24*19,
             path: "/",
-            sameSite: "None",
-            httpOnly: true,
+            sameSite: 'None',
+            httpOnly: false,
             secure: true,
         })
 
         res
-        .status(200)
-        .json({ 
+        .status(200).json({ 
             "access_token": access_token,
             "message": "Login successfully." 
         })
@@ -221,8 +221,6 @@ const loginUser = async(req,res) =>{
         console.log(err)
     }
 }
-
-
 
 const updateUser = async(req,res) =>{
     try{
@@ -233,6 +231,49 @@ const updateUser = async(req,res) =>{
         console.log(err)
     }
 }
+
+const logOutUser = async(req,res) =>{
+    try{
+        // const database = await dbConnections()
+        // const collection = database.collection('users')
+
+        // const { email , password } = req.body
+
+        // if(!email || !password){
+        //     return res
+        //     .status(400)
+        //     .json({ "message": "Failed. No empty field allowed!" })
+        // }
+
+        // if(!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
+        //     return res
+        //     .status(404)
+        //     .json({ "message": "Invalid email format!" })
+        // }
+
+        // const query = { email : email }
+        // const user = await collection.findOne(query)
+
+        // if(!user){
+        //     return res
+        //     .status(400)
+        //     .json({
+        //         "message":"No user found with this email. Please signup."
+        //     })
+        // }
+
+        res.clearCookie('refresh_token')
+
+        res.status(200).json({
+            "message" : "Logout successfull",
+        })
+
+    }catch(err){
+        console.log(err)
+    }
+}
+
+
 
 
 const deleteUser = async(req,res) =>{
@@ -254,5 +295,6 @@ module.exports = {
     getSingleUser,
     signUpUser,
     updateUser,
+    logOutUser,
     deleteUser
 }

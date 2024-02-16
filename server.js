@@ -8,12 +8,12 @@ const PORT = process.env.PORT || 3500
 const authHandler = require('./routes/authRoutes')
 
 
-app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true, 
-}))
+// app.use(cors({
+//     origin: 'http://localhost:3000',
+//     credentials: true, 
+// }))
 app.use(cookieParser())
-// app.use(cors(corsOption))
+app.use(cors(corsOption))
 app.use(express.json())
 
 
