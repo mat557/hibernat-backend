@@ -152,7 +152,7 @@ const loginUser = async(req,res) =>{
         const collection = database.collection('users')
 
         const { email , password } = req.body
-        console.log(req.headers)
+
 
         if(!email || !password){
             return res
@@ -191,19 +191,19 @@ const loginUser = async(req,res) =>{
                 role: user.role
             },
             process.env.REFRESH_TOKEN,
-            {expiresIn: '2h'}
+            {expiresIn: '1d'}
         )
 
         const access_token = jwt.sign({ 
                 email:email,
                 role: user.role
             },
-            process.env.REFRESH_TOKEN,
+            process.env.ACCESS_TOKEN,
             {expiresIn: '15m'}
         )
 
 
-        res.cookie('jwt', refresh_token, {
+        res.cookie('refresh_token', refresh_token, {
             expiresIn:1000*60*60*24*19,
             path: "/",
             sameSite: 'None',
@@ -214,6 +214,7 @@ const loginUser = async(req,res) =>{
         res
         .status(200).json({ 
             "access_token": access_token,
+            "refresh_token": refresh_token,
             "message": "Login successfully." 
         })
 
@@ -287,6 +288,33 @@ const deleteUser = async(req,res) =>{
 }
 
 
+const consistUser = async(req,res) =>{
+    // const cookies = req.cookies
+    // console.log(cookies)
+    // if(!cookies?.refresh_token) return res.status(400).json({ message : "Unaothorized"})
+    // const refreshToken = cookies.refresh_token
+
+    const refresh_token = req.params.token
+    jwt.verify(
+        refresh_token,
+        process.env.REFRESH_TOKEN,
+        async (err,decoded) =>{
+            if(err) return res.status(400).json({ message : "forbidden"})
+        
+            const access_token = jwt.sign({ 
+                email:decoded.email,
+                role: decoded.role
+            },
+                process.env.ACCESS_TOKEN,
+                {expiresIn: '15m'}
+            )
+
+            res.status(200).json({ 'access_token':access_token })
+
+        }
+    )
+}
+
 
 module.exports = {
     getAllUserCount,
@@ -296,5 +324,6 @@ module.exports = {
     signUpUser,
     updateUser,
     logOutUser,
-    deleteUser
+    deleteUser,
+    consistUser
 }
