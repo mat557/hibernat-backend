@@ -62,10 +62,12 @@ const signUpUser = async(req,res) =>{
 
         const { firstname , number , email , password } = req.body
 
+        console.log(email,password)
+
         if(!email || !password){
             return res
             .status(400)
-            .json({ "message": "Failed. No empty field allowed!" })
+            .json({ "message": "Must enter email and password" })
         }
 
         if(!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
@@ -115,21 +117,26 @@ const signUpUser = async(req,res) =>{
                 email:email,
                 role: {}
             },
-            process.env.REFRESH_TOKEN,
+            process.env.ACCESS_TOKEN,
             {expiresIn: '15m'}
         )
 
-        if(response){
+        if(response.acknowledged){
+            
             res.cookie('refresh_token', refresh_token, {
-                maxAge: 1000 * 60 * 45, 
-                httpOnly: true, 
-                signed: true 
+                expiresIn:1000*60*60*24*19,
+                path: "/",
+                sameSite: 'None',
+                httpOnly: false,
+                secure: true,
             })
+
             return res
             .status(200)
             .json({ 
                 "response": response,
                 "access_token": access_token,
+                "refresh_token": refresh_token,
                 "message": "User created successfully." 
             })
         }else{
