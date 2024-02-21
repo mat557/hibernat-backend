@@ -24,7 +24,7 @@ const getAllUsers = async(req,res) =>{
     try{
         const database = await dbConnections()
         const collection = database.collection('users')
-        const users = await collection.find({})
+        const users = await collection.find().toArray()
 
         if (!users){
             return res
@@ -32,10 +32,10 @@ const getAllUsers = async(req,res) =>{
             .json({ "message": "No user found!" })
         }
 
-        return res
+        res
         .status(200)
         .json({
-            "documents":users,
+            "users":users,
             "message": 'Users found'
         })
     }catch(err){
