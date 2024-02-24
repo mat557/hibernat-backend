@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser')
 const corsOption = require('./config/corsOption')
 const PORT = process.env.PORT || 3500
 const authHandler = require('./routes/authRoutes')
+const courseRoutes = require('./routes/courseRoutes')
 
 
 // app.use(cors({
@@ -18,6 +19,7 @@ app.use(express.json())
 
 
 app.use('/',authHandler)
+app.use('/courses',courseRoutes)
 
 app.get('/',(req,res)=>{
     res.status(200).json({ 'message': 'Server responding successfully.'})

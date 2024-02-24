@@ -1,11 +1,14 @@
 const express = require('express')
 const router =  express.Router()
 const authControllers = require('../controllers/authControllers')
+const { verifyJWT } = require('../middleware/verifyJWT')
 
+// router.use(verifyJWT)
 router.route('/user/total').get(authControllers.getAllUserCount) //get all user count
 router.route('/user/all').get(authControllers.getAllUsers)       //get all user
 router.route('/user/single').get(authControllers.getSingleUser)  //get single user
 router.route('/user/consist/:token').get(authControllers.consistUser)  //get single user
+router.route('/user/cookie').get(authControllers.getCookie)  //get single user
 
 
 router.route('/user/signup').post(authControllers.signUpUser) //signup a user

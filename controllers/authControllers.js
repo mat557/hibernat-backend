@@ -3,6 +3,28 @@ const dbConnections = require('../config/dbConnect')
 const bcrypt = require('bcrypt')
 
 
+const getCookie = async(req,res) =>{
+    try{
+        const refresh_token = jwt.sign({ 
+            email:'email',
+            role: 'user.role'
+        },
+        process.env.REFRESH_TOKEN,
+        {expiresIn: '1d'}
+    )
+
+    res.cookie('refresh_token', refresh_token, {
+        httpOnly: true,
+        sameSite: 'None',
+        maxAge: 7 *  24 * 60 * 60 * 1000,
+        secure:true
+    })
+    res.json({'token':refresh_token})
+    }catch(err){
+        console.log(err)
+    }
+}
+
 const getAllUserCount = async(req,res) =>{
     try{
         const database = await dbConnections()
@@ -124,11 +146,9 @@ const signUpUser = async(req,res) =>{
         if(response.acknowledged){
             
             res.cookie('refresh_token', refresh_token, {
-                expiresIn:1000*60*60*24*19,
-                path: "/",
+                httpOnly: true,
                 sameSite: 'None',
-                httpOnly: false,
-                secure: true,
+                maxAge: 7 *  24 * 60 * 60 * 1000,
             })
 
             return res
@@ -193,6 +213,15 @@ const loginUser = async(req,res) =>{
             })
         }
 
+        
+        const access_token = jwt.sign({ 
+            email:email,
+            role: user.role
+        },
+            process.env.ACCESS_TOKEN,
+            {expiresIn: '15s'}
+        )
+
         const refresh_token = jwt.sign({ 
                 email:email,
                 role: user.role
@@ -201,21 +230,10 @@ const loginUser = async(req,res) =>{
             {expiresIn: '1d'}
         )
 
-        const access_token = jwt.sign({ 
-                email:email,
-                role: user.role
-            },
-            process.env.ACCESS_TOKEN,
-            {expiresIn: '15m'}
-        )
-
-
         res.cookie('refresh_token', refresh_token, {
-            expiresIn:1000*60*60*24*19,
-            path: "/",
-            sameSite: 'None',
-            httpOnly: false,
-            secure: true,
+            httpOnly: true,
+            sameSite: 'Strict',
+            maxAge: 7 *  24 * 60 * 60 * 1000,
         })
 
         res
@@ -324,6 +342,7 @@ const consistUser = async(req,res) =>{
 
 
 module.exports = {
+    getCookie,
     getAllUserCount,
     loginUser,
     getAllUsers,
