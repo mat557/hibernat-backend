@@ -46,7 +46,7 @@ const getSingleCourse = async(req,res) =>{
             return res.status(400).json({ "message":"No id"})
         }
 
-        const query = { _id: ObjectId(id) }
+        const query = { _id:new ObjectId(id) }
         const course = await collection.findOne(query)
         if(!course){
             return res.status(400).json({ "message":"No course found"})
@@ -105,7 +105,7 @@ const updateSingelCourse = async(req,res) =>{
                 "message":"No id allowed!"
             })
         }
-        const filter = { _id: ObjectId(id) }
+        const filter = { _id:new ObjectId(id) }
 
         const options = { upsert: true };
 
@@ -137,7 +137,7 @@ const deleteSingleCourse = async(req,res) =>{
             })
         }
 
-        const query = { _id: ObjectId(id) }
+        const query = { _id:new ObjectId(id) }
         const result = await collection.deleteOne(query)
 
         if(result.deletedCount === 1){
