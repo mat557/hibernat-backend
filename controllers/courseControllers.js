@@ -98,27 +98,42 @@ const updateSingelCourse = async(req,res) =>{
     try{
         const database = await dbConnections()
         const collection = database.collection('course')
-        const {id,title,des} = req.body
+        const { id , course_assignment , code , course_description , course_exam , course_fee , course_nmbr , course_title } = req.body
 
         if(!id){
             return res.status(400).json({
-                "message":"No id allowed!"
+                "message":"No id Found!"
             })
         }
+
         const filter = { _id:new ObjectId(id) }
+        const course = await collection.findOne(filter)
+
+        if(!course){
+            return res.status(400).json({
+                "message": "No course found with this id"
+            })
+        }
+
+        const doc = {
+            "code": code ? code : course.code,
+            "course_assignment": course_assignment ? course_assignment : course.course_assignment,
+            "course_description": course_description ? course_description : course.course_description,
+            "course_exam": course_exam ? course_exam : course.course_exam,
+            "course_fee": course_fee ? course_fee : course.course_fee,
+            "course_nmbr": course_nmbr ? course_nmbr : course.course_nmbr,
+            "course_title": course_title ? course_title : course.course_title
+        }
 
         const options = { upsert: true };
 
         const updateDoc = {
-          $set: {
-            title : title,  
-            title : title,  
-          }
+          $set: doc
         }
-        const res = await collection.insertOne(filter , updateDoc , options)
+        const result = await collection.updateOne(filter , updateDoc , options)
         res.json({
             "message": "done",
-            "doc" : res
+            "doc" : result
         })
     }catch(err){
         console.log(err)

@@ -16,7 +16,7 @@ router.route('/user/login').post(authControllers.loginUser)   //login a user
 router.route('/user/logout').post(authControllers.logOutUser) //login a user
 
 
-router.route('/user/update').patch(authControllers.updateUser)  //path a  user
+router.route('/user/update').patch(authControllers.updateUser)  //patch a  user
 
 router.route('/user/delete').delete(authControllers.deleteUser) //delete user
 
