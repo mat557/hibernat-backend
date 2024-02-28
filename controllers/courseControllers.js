@@ -154,18 +154,18 @@ const deleteSingleCourse = async(req,res) =>{
 
         const query = { _id:new ObjectId(id) }
         const result = await collection.deleteOne(query)
-
-        if(result.deletedCount === 1){
-            res.status(200).json({
-                "message":"Successful",
-                "result":result
-            })
-        }else{
-            res.status(400).json({
-                "message":"Failed",
-                "result":result
+        if(!result){
+            return res.status(400).json({
+                "message": "No Course found with this id"
             })
         }
+
+
+        res.status(200).json({
+            "message":"Successful",
+            "result":result
+        })
+        
     }catch(err){
         console.log(err)
     }

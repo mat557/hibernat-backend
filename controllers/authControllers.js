@@ -227,7 +227,7 @@ const loginUser = async(req,res) =>{
                 role: user.role
             },
             process.env.REFRESH_TOKEN,
-            {expiresIn: '1d'}
+            {expiresIn: '2h'}
         )
 
         res.cookie('refresh_token', refresh_token, {
@@ -324,7 +324,12 @@ const consistUser = async(req,res) =>{
         refresh_token,
         process.env.REFRESH_TOKEN,
         async (err,decoded) =>{
-            if(err) return res.status(400).json({ message : "forbidden"})
+            if(err){
+                console.log(err)
+                return res.status(400).json({ 
+                    message : "forbidden"
+                })
+            }
         
             const access_token = jwt.sign({ 
                 email:decoded.email,

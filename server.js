@@ -7,6 +7,7 @@ const corsOption = require('./config/corsOption')
 const PORT = process.env.PORT || 3500
 const authHandler = require('./routes/authRoutes')
 const courseRoutes = require('./routes/courseRoutes')
+const blogRoutes = require('./routes/blogRoutes')
 
 
 // app.use(cors({
@@ -20,6 +21,7 @@ app.use(express.json())
 
 app.use('/',authHandler)
 app.use('/courses',courseRoutes)
+app.use('/blogs',blogRoutes)
 
 app.get('/',(req,res)=>{
     res.status(200).json({ 'message': 'Server responding successfully.'})
