@@ -20,14 +20,14 @@ const getAllCourses = async(req,res) =>{
     try{
         const database = await dbConnections()
         const collection = database.collection('course')
-        const courses = await collection.find().toArray()
+        const course = await collection.find().toArray()
 
-        if(!courses){
+        if(!course){
             return res.status(400).json({ "message":"No course found"})
         }
 
         res.status(200).json({
-            "courses":courses,
+            "courses":course,
             "message":"Successful"
         })
     }catch(err){
