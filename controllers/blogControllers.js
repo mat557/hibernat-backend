@@ -63,6 +63,45 @@ const getSingleBlog = async(req,res) =>{
     }
 }
 
+
+const likeBlog = async(req,res) =>{
+    try{
+        const database = await dbConnections()
+        const collection = database.collection('blogs')
+
+        const { email , id } = req.body
+
+        if(!email){
+            return res.status(400).json({
+                message:'Login to like!'
+            })
+        }
+        
+        if(!id){
+            return res.status(400).json({
+                message:'No id'
+            })
+        }
+
+        const query = { _id: new ObjectId(id) }
+
+        const blog = await collection.findOne(query)
+        console.log(blog.like_count)
+
+        if(!blog){
+            return res.status(400).json({
+                message:"No blog found with this id!"
+            })
+        }
+
+        res.status(200).json(blog)
+
+
+    }catch(err){
+        console.log(err)
+    }
+}
+
 const insertSingelBlog = async(req,res) =>{
     try{
         const database = await dbConnections()
@@ -74,6 +113,7 @@ const insertSingelBlog = async(req,res) =>{
                 "message":"No empty field allowed!"
             })
         }
+
         const currentDate = new Date()
         const formatted = format(currentDate, "MM/dd/yyyy")
 
@@ -84,8 +124,9 @@ const insertSingelBlog = async(req,res) =>{
             blog_content:blog_content,
             blog_tag:blog_tag,
             postedAt: formatted,
-            like_count: 0,
-            dislike_count: 0,
+            like_count: [],
+            dislike_count: [],
+            comments: [],
             update_count: 0,
         }
 
@@ -182,6 +223,7 @@ module.exports = {
     getBlogCount,
     getSingleBlog,
     getAllBlogs,
+    likeBlog,
     updateSingelBlog,
     deleteSingleBlog,
     insertSingelBlog
