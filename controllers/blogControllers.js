@@ -64,6 +64,46 @@ const getSingleBlog = async(req,res) =>{
 }
 
 
+const unLikeBlog = async(req,res) =>{
+    try{
+        const database = await dbConnections()
+        const collection = database.collection('blogs')
+
+        const { email , id } = req.body
+
+        if(!email){
+            return res.status(400).json({
+                message:'Login to like!'
+            })
+        }
+        
+        if(!id){
+            return res.status(400).json({
+                message:'No id'
+            })
+        }
+
+        const query = { _id: new ObjectId(id) }
+        const blog = await collection.findOne(query)
+
+        if(!blog){
+            return res.status(400).json({
+                message:"No blog found with this id!"
+            })
+        }
+
+        const insertDoc = {
+            $addToSet :{ "dislike_count": email }
+        }
+
+        const comment = await collection.updateOne(query,insertDoc)
+        res.status(200).json(comment)
+    }catch(err){
+        console.log(err)
+    }
+}
+
+
 const likeBlog = async(req,res) =>{
     try{
         const database = await dbConnections()
@@ -84,9 +124,7 @@ const likeBlog = async(req,res) =>{
         }
 
         const query = { _id: new ObjectId(id) }
-
         const blog = await collection.findOne(query)
-        console.log(blog.like_count)
 
         if(!blog){
             return res.status(400).json({
@@ -94,9 +132,12 @@ const likeBlog = async(req,res) =>{
             })
         }
 
-        res.status(200).json(blog)
+        const insertDoc = {
+            $addToSet :{ "like_count": email }
+        }
 
-
+        const comment = await collection.updateOne(query,insertDoc)
+        res.status(200).json(comment)
     }catch(err){
         console.log(err)
     }
@@ -224,6 +265,7 @@ module.exports = {
     getSingleBlog,
     getAllBlogs,
     likeBlog,
+    unLikeBlog,
     updateSingelBlog,
     deleteSingleBlog,
     insertSingelBlog

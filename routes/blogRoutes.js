@@ -9,7 +9,7 @@ router.route('/single/blog/:id').get(blogControllers.getSingleBlog)
 
 router.route('/insert/blog').post(blogControllers.insertSingelBlog)
 router.route('/like/blog').post(blogControllers.likeBlog)
-// router.route('/insert/blog').post(blogControllers.disLikeBlog)
+router.route('/unlike/blog').post(blogControllers.unLikeBlog)
 
 router.route('/update/blog').patch(blogControllers.updateSingelBlog)
 
