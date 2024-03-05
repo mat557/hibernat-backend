@@ -76,7 +76,7 @@ const unLikeBlog = async(req,res) =>{
                 message:'Login to like!'
             })
         }
-        
+
         if(!id){
             return res.status(400).json({
                 message:'No id'
@@ -113,10 +113,10 @@ const likeBlog = async(req,res) =>{
 
         if(!email){
             return res.status(400).json({
-                message:'Login to like!'
+                message:'Please login!'
             })
         }
-        
+
         if(!id){
             return res.status(400).json({
                 message:'No id'
@@ -131,13 +131,26 @@ const likeBlog = async(req,res) =>{
                 message:"No blog found with this id!"
             })
         }
+        
+        const consist = blog.like_count.indexOf(email)
 
-        const insertDoc = {
-            $addToSet :{ "like_count": email }
+        let comment
+        let target = 1
+
+        if(consist === -1){
+            const insertDoc = {
+                $addToSet : { "like_count": email }
+           }
+           target = 0
+           comment = await collection.updateOne(query,insertDoc)
+        }else{
+            const removeDoc = {
+                $pull: { "like_count": email }
+            }
+            comment = await collection.updateOne(query, removeDoc)
         }
-
-        const comment = await collection.updateOne(query,insertDoc)
-        res.status(200).json(comment)
+        
+        res.status(200).json({ comment , target })
     }catch(err){
         console.log(err)
     }
