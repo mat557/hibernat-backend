@@ -70,10 +70,10 @@ const unLikeBlog = async(req,res) =>{
         const collection = database.collection('blogs')
 
         const { email , id } = req.body
-
+        // console.log(req.body)
         if(!email){
             return res.status(400).json({
-                message:'Login to like!'
+                message:'Please login!'
             })
         }
 
@@ -91,13 +91,31 @@ const unLikeBlog = async(req,res) =>{
                 message:"No blog found with this id!"
             })
         }
+        
+        const consist = blog.dislike_count.indexOf(email)
 
-        const insertDoc = {
-            $addToSet :{ "dislike_count": email }
+
+        let comment
+        let target = 1
+
+        if(consist === -1){
+            const insertDoc = {
+                $addToSet : { "dislike_count": email }
+           }
+           const removeDoc = {
+                $pull: { "like_count": email }
+            }
+           target = 0
+           comment = await collection.updateOne(query,insertDoc)
+           await collection.updateOne(query,removeDoc)
+        }else{
+            const removeDoc = {
+                $pull: { "dislike_count": email }
+            }
+            comment = await collection.updateOne(query, removeDoc)
         }
-
-        const comment = await collection.updateOne(query,insertDoc)
-        res.status(200).json(comment)
+        
+        res.status(200).json({ comment , target })
     }catch(err){
         console.log(err)
     }
@@ -132,7 +150,7 @@ const likeBlog = async(req,res) =>{
             })
         }
         
-        const consist = blog.like_count.indexOf(email)
+        const consist  = blog.like_count.indexOf(email)
 
         let comment
         let target = 1
@@ -141,8 +159,12 @@ const likeBlog = async(req,res) =>{
             const insertDoc = {
                 $addToSet : { "like_count": email }
            }
+           const removeDoc = {
+                $pull: { "dislike_count": email }
+            }
            target = 0
            comment = await collection.updateOne(query,insertDoc)
+           await collection.updateOne(query,removeDoc)
         }else{
             const removeDoc = {
                 $pull: { "like_count": email }
