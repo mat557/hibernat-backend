@@ -71,6 +71,20 @@ const getSingleUser = async(req,res) =>{
         const database = await dbConnections()
         const collection = database.collection('users')
 
+        const { email } = req.params
+  
+        if(!email){
+            return res.status(400).json("No email found!")
+        }
+
+        const query = { email : email}
+        const profile = await collection.findOne(query)
+
+        if(!profile){
+            return res.status(400).json("No user found!")
+        }
+
+        res.status(200).json(profile)
     }catch(err){
         console.log(err)
     }
