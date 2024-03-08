@@ -134,7 +134,7 @@ const signUpUser = async(req,res) =>{
             number : number ,
             email: email,
             password: hashedPass,
-            role: {}
+            role: []
         }
 
         const response = await collection.insertOne(userDoc)
@@ -227,7 +227,7 @@ const loginUser = async(req,res) =>{
             })
         }
 
-        
+
         const access_token = jwt.sign({ 
             email:email,
             role: user.role
